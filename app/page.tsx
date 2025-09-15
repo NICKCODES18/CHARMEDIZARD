@@ -5,6 +5,8 @@ import { useState } from "react";
 
 export default function Page() {
   const [input, setInput] = useState("");
+  const [age, setAge] = useState("");
+  const [sex, setSex] = useState("unknown"); // New state for gender
   const [report, setReport] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -21,8 +23,8 @@ export default function Page() {
         body: JSON.stringify({
           patientId: crypto.randomUUID(),
           transcript: input,
-          age: 25, // hardcoded for demo; you can add fields later
-          sex: "male",
+          age: parseInt(age, 10) || undefined,
+          sex: sex, // Use the selected sex
         }),
       });
 
@@ -44,6 +46,37 @@ export default function Page() {
       <h2 className="text-2xl font-bold text-blue-700">
         Describe Your Symptoms
       </h2>
+
+      <div>
+        <label htmlFor="age" className="block text-sm font-medium text-gray-700">
+          Age
+        </label>
+        <input
+          type="number"
+          id="age"
+          className="mt-1 block w-full border rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Enter your age"
+          value={age}
+          onChange={(e) => setAge(e.target.value)}
+        />
+      </div>
+
+      <div>
+        <label htmlFor="sex" className="block text-sm font-medium text-gray-700">
+          Sex
+        </label>
+        <select
+          id="sex"
+          className="mt-1 block w-full border rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          value={sex}
+          onChange={(e) => setSex(e.target.value)}
+        >
+          <option value="unknown">Prefer not to say</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
 
       <textarea
         className="w-full border rounded p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -69,6 +102,12 @@ export default function Page() {
         <section className="p-4 border rounded bg-white shadow space-y-3">
           <h3 className="text-xl font-semibold">Triage Report</h3>
           <p>
+            <strong>Age:</strong> {report.age}
+          </p>
+          <p>
+            <strong>Sex:</strong> {report.sex}
+          </p>
+          <p>
             <strong>Urgency:</strong>{" "}
             <span
               className={`px-2 py-1 rounded ${
@@ -85,9 +124,48 @@ export default function Page() {
           <p>
             <strong>Recommended Action:</strong> {report.recommendedAction}
           </p>
+          {report.recommendedActionReason && (
+            <p className="text-sm text-gray-600 pl-4 border-l-4 border-blue-200">
+              <strong>Reason:</strong> {report.recommendedActionReason}
+            </p>
+          )}
+
+          {report.instantRemedies && report.instantRemedies.length > 0 && (
+            <div>
+              <h4 className="font-semibold">Instant Remedies:</h4>
+              <ul className="list-disc list-inside text-sm text-gray-700">
+                {report.instantRemedies.map((remedy: string, index: number) => (
+                  <li key={index}>{remedy}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           <p>
             <strong>Doctor Summary:</strong> {report.summaryForDoctor}
           </p>
+
+          {report.vitals && (
+            <div>
+              <h4 className="font-semibold">Vitals:</h4>
+              <ul className="list-disc list-inside">
+                {report.vitals.temperature && (
+                  <li>Temperature: {report.vitals.temperature}</li>
+                )}
+                {report.vitals.heartRate && (
+                  <li>Heart Rate: {report.vitals.heartRate}</li>
+                )}
+                {report.vitals.bloodPressure && (
+                  <li>Blood Pressure: {report.vitals.bloodPressure}</li>
+                )}
+                {report.vitals.oxygenSaturation && (
+                  <li>
+                    Oxygen Saturation: {report.vitals.oxygenSaturation}
+                  </li>
+                )}
+              </ul>
+            </div>
+          )}
 
           <details>
             <summary className="cursor-pointer text-blue-600">

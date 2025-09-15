@@ -1,4 +1,4 @@
-// File: D:\triage-bot\app\api\triage\route.ts
+// File: /home/pbsmarta/Documents/Telemedicine/CHARMEDIZARD/app/api/triage/route.ts
 import * as entry from '../../../../../app/api/triage/route.js'
 import type { NextRequest } from 'next/server.js'
 

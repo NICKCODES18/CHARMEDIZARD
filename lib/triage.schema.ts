@@ -3,8 +3,18 @@ import { z } from "zod";
 
 export const TriageReportSchema = z.object({
   patientId: z.string(),
+  triageDate: z.string(),
   age: z.number().int().min(0).max(120).optional(),
   sex: z.enum(["female", "male", "other", "unknown"]).optional(),
+
+  vitals: z
+    .object({
+      temperature: z.string().optional(), // e.g., "38.5 C" or "101.3 F"
+      heartRate: z.string().optional(), // e.g., "80 bpm"
+      bloodPressure: z.string().optional(), // e.g., "120/80 mmHg"
+      oxygenSaturation: z.string().optional(), // e.g., "98%"
+    })
+    .optional(),
 
   symptoms: z
     .array(
@@ -32,6 +42,8 @@ export const TriageReportSchema = z.object({
   urgency: z.enum(["low", "medium", "high"]),
 
   recommendedAction: z.string(),
+  recommendedActionReason: z.string().optional(),
+  instantRemedies: z.array(z.string()).optional(),
   followUps: z.array(z.string()).optional(),
 
   summaryForDoctor: z.string(),
